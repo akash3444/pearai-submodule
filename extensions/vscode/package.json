@@ -313,6 +313,11 @@
         "command": "pearai.toggleTabAutocompleteEnabled",
         "mac": "cmd+k cmd+a",
         "key": "ctrl+k ctrl+a"
+      },
+      {
+        "command": "pearai.loadRecentChat",
+        "mac": "cmd+0",
+        "key": "ctrl+0"
       }
     ],
     "submenus": [

@@ -476,7 +476,9 @@ const commandsMap: (
       sidebar.webviewProtocol?.request("viewHistory", undefined);
     },
     "pearai.resizeAuxiliaryBarWidth": () => {
-      vscode.commands.executeCommand("workbench.action.resizeAuxiliaryBarWidth");
+      vscode.commands.executeCommand(
+        "workbench.action.resizeAuxiliaryBarWidth",
+      );
     },
     "pearai.winResizeAuxiliaryBarWidth": () => {
       vscode.commands.executeCommand("pearai.resizeAuxiliaryBarWidth");
@@ -586,6 +588,9 @@ const commandsMap: (
         !enabled,
         vscode.ConfigurationTarget.Global,
       );
+    },
+    "pearai.loadRecentChat": () => {
+      // Overrides VS code shortcut
     },
   };
 };

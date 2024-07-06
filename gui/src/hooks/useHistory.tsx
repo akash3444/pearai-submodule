@@ -5,7 +5,7 @@ import { llmCanGenerateInParallel } from "core/llm/autodetect";
 import { stripImages } from "core/llm/countTokens";
 import { useSelector } from "react-redux";
 import { defaultModelSelector } from "../redux/selectors/modelSelectors";
-import { newSession } from "../redux/slices/stateSlice";
+import { newSession, setMostRecentChat } from "../redux/slices/stateSlice";
 import { RootState } from "../redux/store";
 import { ideRequest } from "../util/ide";
 import { getLocalStorage, setLocalStorage } from "../util/localStorage";
@@ -86,6 +86,11 @@ function useHistory(dispatch: Dispatch) {
 
   async function loadSession(id: string): Promise<PersistedSessionInfo> {
     setLocalStorage("lastSessionId", state.sessionId);
+
+    // If the session to load is not the same as the current session
+    if (state.sessionId && id !== state.sessionId) {
+      dispatch(setMostRecentChat(state.sessionId));
+    }
     const json: PersistedSessionInfo = await ideRequest("history/load", { id });
     dispatch(newSession(json));
     return json;
@@ -96,6 +101,9 @@ function useHistory(dispatch: Dispatch) {
     if (lastSessionId) {
       return await loadSession(lastSessionId);
     }
+  }
+  async function loadRecentChat(): Promise<PersistedSessionInfo> {
+    return await loadSession(state.mostRecentChat);
   }
 
   function getLastSessionId(): string {
@@ -109,6 +117,7 @@ function useHistory(dispatch: Dispatch) {
     loadSession,
     loadLastSession,
     getLastSessionId,
+    loadRecentChat,
   };
 }
 

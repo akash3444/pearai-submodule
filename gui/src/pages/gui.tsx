@@ -127,14 +127,14 @@ function fallbackRender({ error, resetErrorBoundary }) {
 
   return (
     <div
-      role="alert"
-      className="px-2"
+      role='alert'
+      className='px-2'
       style={{ backgroundColor: vscBackground }}
     >
       <p>Something went wrong:</p>
       <pre style={{ color: "red" }}>{error.message}</pre>
 
-      <div className="text-center">
+      <div className='text-center'>
         <Button onClick={resetErrorBoundary}>Restart</Button>
       </div>
     </div>
@@ -232,6 +232,21 @@ function GUI(props: GUIProps) {
     };
   }, [active]);
 
+  useEffect(() => {
+    // Cmd + 0 to open recent chat
+    const listener = async (e: any) => {
+      if (e.key === "0" && e.metaKey && state.mostRecentChat) {
+        saveSession();
+        await loadRecentChat();
+      }
+    };
+    window.addEventListener("keydown", listener);
+
+    return () => {
+      window.removeEventListener("keydown", listener);
+    };
+  }, [state.sessionId, state.mostRecentChat]);
+
   // #endregion
 
   const { streamResponse } = useChatHandler(dispatch);
@@ -264,7 +279,7 @@ function GUI(props: GUIProps) {
         if (currentCount === 300) {
           dispatch(
             setDialogMessage(
-              <div className="text-center p-4">
+              <div className='text-center p-4'>
                 👋 Thanks for using Continue. We are always trying to improve
                 and love hearing from users. If you're interested in speaking,
                 enter your name and email. We won't use this information for
@@ -280,7 +295,7 @@ function GUI(props: GUIProps) {
                     });
                     dispatch(
                       setDialogMessage(
-                        <div className="text-center p-4">
+                        <div className='text-center p-4'>
                           Thanks! We'll be in touch soon.
                         </div>,
                       ),
@@ -294,16 +309,16 @@ function GUI(props: GUIProps) {
                 >
                   <input
                     style={{ padding: "10px", borderRadius: "5px" }}
-                    type="text"
-                    name="name"
-                    placeholder="Name"
+                    type='text'
+                    name='name'
+                    placeholder='Name'
                     required
                   />
                   <input
                     style={{ padding: "10px", borderRadius: "5px" }}
-                    type="email"
-                    name="email"
-                    placeholder="Email"
+                    type='email'
+                    name='email'
+                    placeholder='Email'
                     required
                   />
                   <button
@@ -312,7 +327,7 @@ function GUI(props: GUIProps) {
                       borderRadius: "5px",
                       cursor: "pointer",
                     }}
-                    type="submit"
+                    type='submit'
                   >
                     Submit
                   </button>
@@ -336,7 +351,7 @@ function GUI(props: GUIProps) {
     ],
   );
 
-  const { saveSession, getLastSessionId, loadLastSession } =
+  const { saveSession, getLastSessionId, loadLastSession, loadRecentChat } =
     useHistory(dispatch);
 
   useWebviewListener(
@@ -365,7 +380,7 @@ function GUI(props: GUIProps) {
   return (
     <>
       <TopGuiDiv ref={topGuiDivRef}>
-        <div className="max-w-3xl m-auto">
+        <div className='max-w-3xl m-auto'>
           <StepsDiv>
             {state.history.map((item, index: number) => {
               return (
@@ -391,17 +406,17 @@ function GUI(props: GUIProps) {
                         item={item}
                         iconElement={
                           false ? (
-                            <CodeBracketSquareIcon width="16px" height="16px" />
+                            <CodeBracketSquareIcon width='16px' height='16px' />
                           ) : false ? (
                             <ExclamationTriangleIcon
-                              width="16px"
-                              height="16px"
-                              color="red"
+                              width='16px'
+                              height='16px'
+                              color='red'
                             />
                           ) : (
                             <ChatBubbleOvalLeftIcon
-                              width="16px"
-                              height="16px"
+                              width='16px'
+                              height='16px'
                             />
                           )
                         }
@@ -473,7 +488,7 @@ function GUI(props: GUIProps) {
               onClick={() => {
                 saveSession();
               }}
-              className="mr-auto"
+              className='mr-auto'
             >
               New Session ({getMetaKeyLabel()} {isJetBrains() ? "J" : "L"})
             </NewSessionButton>
@@ -482,9 +497,9 @@ function GUI(props: GUIProps) {
               onClick={async () => {
                 loadLastSession();
               }}
-              className="mr-auto flex items-center gap-1"
+              className='mr-auto flex items-center gap-1'
             >
-              <ArrowLeftIcon width="11px" height="11px" />
+              <ArrowLeftIcon width='11px' height='11px' />
               Last Session
             </NewSessionButton>
           ) : null}
@@ -492,7 +507,7 @@ function GUI(props: GUIProps) {
       </TopGuiDiv>
       {active && (
         <StopButton
-          className="mt-auto"
+          className='mt-auto'
           onClick={() => {
             dispatch(setInactive());
             if (
