@@ -3,24 +3,24 @@ import {
   BarsArrowDownIcon,
   HandThumbDownIcon,
   HandThumbUpIcon,
-} from "@heroicons/react/24/outline";
-import { ChatHistoryItem } from "core";
-import { stripImages } from "core/llm/countTokens";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import styled from "styled-components";
+} from '@heroicons/react/24/outline';
+import { ChatHistoryItem } from 'core';
+import { stripImages } from 'core/llm/countTokens';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import styled from 'styled-components';
 import {
   defaultBorderRadius,
   lightGray,
   vscBackground,
   vscInputBackground,
-} from "..";
-import { RootState } from "../../redux/store";
-import { getFontSize } from "../../util";
-import { postToIde } from "../../util/ide";
-import HeaderButtonWithText from "../HeaderButtonWithText";
-import { CopyButton } from "../markdown/CopyButton";
-import StyledMarkdownPreview from "../markdown/StyledMarkdownPreview";
+} from '..';
+import { RootState } from '../../redux/store';
+import { getFontSize } from '../../util';
+import { postToIde } from '../../util/ide';
+import HeaderButtonWithText from '../HeaderButtonWithText';
+import { CopyButton } from '../markdown/CopyButton';
+import StyledMarkdownPreview from '../markdown/StyledMarkdownPreview';
 
 interface StepContainerProps {
   item: ChatHistoryItem;
@@ -65,7 +65,7 @@ const ContentDiv = styled.div<{ isUserInput: boolean; fontSize?: number }>`
 
 function StepContainer(props: StepContainerProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const isUserInput = props.item.message.role === "user";
+  const isUserInput = props.item.message.role === 'user';
   const active = useSelector((store: RootState) => store.state.active);
 
   const [feedback, setFeedback] = useState<boolean | undefined>(undefined);
@@ -74,8 +74,8 @@ function StepContainer(props: StepContainerProps) {
     setFeedback(feedback);
     if (props.item.promptLogs?.length) {
       for (const promptLog of props.item.promptLogs) {
-        postToIde("devdata/log", {
-          tableName: "chat",
+        postToIde('devdata/log', {
+          tableName: 'chat',
           data: { ...promptLog, feedback },
         });
       }
@@ -87,7 +87,7 @@ function StepContainer(props: StepContainerProps) {
   useEffect(() => {
     if (!active) {
       const content = stripImages(props.item.message.content).trim();
-      const endingPunctuation = [".", "?", "!", "```"];
+      const endingPunctuation = ['.', '?', '!', '```'];
 
       // If not ending in punctuation or emoji, we assume the response got truncated
       if (
@@ -112,7 +112,7 @@ function StepContainer(props: StepContainerProps) {
         setIsHovered(false);
       }}
     >
-      <div className="relative">
+      <div className='relative'>
         <ContentDiv
           hidden={!props.open}
           isUserInput={isUserInput}
@@ -123,24 +123,25 @@ function StepContainer(props: StepContainerProps) {
             showCodeBorder={true}
           />
         </ContentDiv>
-        <div className="h-2"></div>
-        {(isHovered || typeof feedback !== "undefined") && !active && (
+        <div className='h-2'></div>
+        {(isHovered || typeof feedback !== 'undefined') && !active && (
           <div
-            className="flex items-center gap-2 right-2 absolute -bottom-1"
+            className='flex items-center gap-2 right-2 absolute -bottom-1'
             style={{ zIndex: 200 }}
           >
             {truncatedEarly && (
               <HeaderButtonWithText
-                text="Continue generation"
+                text=''
                 onClick={(e) => {
                   props.onContinueGeneration();
                 }}
               >
                 <BarsArrowDownIcon
                   color={lightGray}
-                  width="1.2em"
-                  height="1.2em"
+                  width='1.2em'
+                  height='1.2em'
                 />
+                Continue generation
               </HeaderButtonWithText>
             )}
 
@@ -149,26 +150,26 @@ function StepContainer(props: StepContainerProps) {
               color={lightGray}
             />
             <HeaderButtonWithText
-              text="Regenerate"
+              text='Regenerate'
               onClick={(e) => {
                 props.onRetry();
               }}
             >
               <ArrowUturnLeftIcon
                 color={lightGray}
-                width="1.2em"
-                height="1.2em"
+                width='1.2em'
+                height='1.2em'
               />
             </HeaderButtonWithText>
             {feedback === false || (
-              <HeaderButtonWithText text="Helpful">
+              <HeaderButtonWithText text='Helpful'>
                 <HandThumbUpIcon
                   className={
-                    "cursor-pointer hover:text-green-500" +
-                    (feedback === true ? " text-green-500" : "")
+                    'cursor-pointer hover:text-green-500' +
+                    (feedback === true ? ' text-green-500' : '')
                   }
-                  width="1.2em"
-                  height="1.2em"
+                  width='1.2em'
+                  height='1.2em'
                   color={lightGray}
                   onClick={() => {
                     sendFeedback(true);
@@ -177,14 +178,14 @@ function StepContainer(props: StepContainerProps) {
               </HeaderButtonWithText>
             )}
             {feedback === true || (
-              <HeaderButtonWithText text="Unhelpful">
+              <HeaderButtonWithText text='Unhelpful'>
                 <HandThumbDownIcon
                   className={
-                    "cursor-pointer hover:text-red-500" +
-                    (feedback === false ? " text-red-500" : "")
+                    'cursor-pointer hover:text-red-500' +
+                    (feedback === false ? ' text-red-500' : '')
                   }
-                  width="1.2em"
-                  height="1.2em"
+                  width='1.2em'
+                  height='1.2em'
                   color={lightGray}
                   onClick={() => {
                     sendFeedback(false);
