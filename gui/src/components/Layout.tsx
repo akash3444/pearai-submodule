@@ -1,45 +1,46 @@
 import {
   Cog6ToothIcon,
   QuestionMarkCircleIcon,
-} from "@heroicons/react/24/outline";
-import { IndexingProgressUpdate } from "core";
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+} from '@heroicons/react/24/outline';
+import { IndexingProgressUpdate } from 'core';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import {
   CustomScrollbarDiv,
   defaultBorderRadius,
   vscForeground,
   vscInputBackground,
   vscBackground,
-} from ".";
-import { useWebviewListener } from "../hooks/useWebviewListener";
-import { defaultModelSelector } from "../redux/selectors/modelSelectors";
+} from '.';
+import { useWebviewListener } from '../hooks/useWebviewListener';
+import { defaultModelSelector } from '../redux/selectors/modelSelectors';
 import {
   setBottomMessage,
   setBottomMessageCloseTimeout,
   setShowDialog,
-} from "../redux/slices/uiStateSlice";
-import { RootState } from "../redux/store";
-import { getFontSize, isMetaEquivalentKeyPressed } from "../util";
-import { isJetBrains, postToIde } from "../util/ide";
-import { getLocalStorage } from "../util/localStorage";
-import HeaderButtonWithText from "./HeaderButtonWithText";
-import TextDialog from "./dialogs";
-import { ftl } from "./dialogs/FTCDialog";
-import IndexingProgressBar from "./loaders/IndexingProgressBar";
-import ProgressBar from "./loaders/ProgressBar";
-import ModelSelect from "./modelSelection/ModelSelect";
+} from '../redux/slices/uiStateSlice';
+import { RootState } from '../redux/store';
+import { getFontSize, isMetaEquivalentKeyPressed } from '../util';
+import { isJetBrains, postToIde } from '../util/ide';
+import { getLocalStorage } from '../util/localStorage';
+import HeaderButtonWithText from './HeaderButtonWithText';
+import TextDialog from './dialogs';
+import { ftl } from './dialogs/FTCDialog';
+import IndexingProgressBar from './loaders/IndexingProgressBar';
+import ProgressBar from './loaders/ProgressBar';
+import ModelSelect from './modelSelection/ModelSelect';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
 // check mac or window
 const platform = navigator.userAgent.toLowerCase();
 const isMac = platform.includes('mac');
 const isWindows = platform.includes('win');
-  
+
 // #region Styled Components
-const HEADER_HEIGHT = "1.55rem";
-const FOOTER_HEIGHT = "1.8em";
+const HEADER_HEIGHT = '1.55rem';
+const FOOTER_HEIGHT = '1.8em';
 
 const LayoutTopDiv = styled(CustomScrollbarDiv)`
   min-height: 100%;
@@ -48,8 +49,8 @@ const LayoutTopDiv = styled(CustomScrollbarDiv)`
 
 const BottomMessageDiv = styled.div<{ displayOnBottom: boolean }>`
   position: fixed;
-  bottom: ${(props) => (props.displayOnBottom ? "50px" : undefined)};
-  top: ${(props) => (props.displayOnBottom ? undefined : "50px")};
+  bottom: ${(props) => (props.displayOnBottom ? '50px' : undefined)};
+  top: ${(props) => (props.displayOnBottom ? undefined : '50px')};
   left: 0;
   right: 0;
   margin: 8px;
@@ -93,7 +94,8 @@ const Header = styled.header`
 
 const GridDiv = styled.div<{ showHeader: boolean }>`
   display: grid;
-  grid-template-rows: ${(props) => (props.showHeader ? "auto 1fr auto" : "1fr auto")};
+  grid-template-rows: ${(props) =>
+    props.showHeader ? 'auto 1fr auto' : '1fr auto'};
   min-height: 100vh;
   overflow-x: visible;
 `;
@@ -109,15 +111,12 @@ const DropdownPortalDiv = styled.div`
 // #endregion
 
 const HIDE_FOOTER_ON_PAGES = [
-  "/onboarding",
-  "/existingUserOnboarding",
-  "/localOnboarding",
+  '/onboarding',
+  '/existingUserOnboarding',
+  '/localOnboarding',
 ];
 
-const SHOW_SHORTCUTS_ON_PAGES = [
-  "/",
-];
-
+const SHOW_SHORTCUTS_ON_PAGES = ['/'];
 
 type ShortcutProps = {
   modifiers: string[];
@@ -158,7 +157,19 @@ const Shortcut = ({
 const ShortcutContainer = () => {
   const shortcutContainerRef = useRef<HTMLDivElement>(null);
   const [modifier] = useState(isMac ? 'Cmd' : 'Ctrl');
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
 
+  const scrollShortcut = (direction: 'left' | 'right') => {
+    const SCROLL_OFFSET = 50;
+    const clientWidth = shortcutContainerRef.current.clientWidth;
+    const left =
+      direction === 'left'
+        ? -(clientWidth + SCROLL_OFFSET)
+        : clientWidth - SCROLL_OFFSET;
+    console.log('left :', left);
+    shortcutContainerRef.current.scrollBy({ left, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     const shortcutContainer = shortcutContainerRef.current;
@@ -177,31 +188,86 @@ const ShortcutContainer = () => {
     }
   }, []);
 
-const shortcuts = [
-  { modifiers: [modifier], keyCode: '[', description: 'Big', onClick: () => postToIde('bigChat', undefined) },
-  { modifiers: [modifier], keyCode: '0', description: 'Prev', onClick: () => postToIde('lastChat', undefined) },
-  { modifiers: [modifier], keyCode: 'O', description: 'History' },
-  { modifiers: [modifier], keyCode: ';', description: 'Close', onClick: () => postToIde('closeChat', undefined) },
-  { modifiers: [modifier, 'Shift'], keyCode: 'L', description: 'Add Selected' },
-];
+  useEffect(() => {
+    const shortcutContainer = shortcutContainerRef.current;
 
+    const updateArrows = () => {
+      setShowLeftArrow(shortcutContainer.scrollLeft > 0);
+
+      setShowRightArrow(
+        shortcutContainer.scrollLeft <
+          shortcutContainer.scrollWidth - shortcutContainer.clientWidth,
+      );
+    };
+
+    // Update arrows on scroll
+    shortcutContainer.addEventListener('scroll', updateArrows);
+  }, []);
+
+  const shortcuts = [
+    {
+      modifiers: [modifier],
+      keyCode: '[',
+      description: 'Big',
+      onClick: () => postToIde('bigChat', undefined),
+    },
+    {
+      modifiers: [modifier],
+      keyCode: '0',
+      description: 'Prev',
+      onClick: () => postToIde('lastChat', undefined),
+    },
+    { modifiers: [modifier], keyCode: 'O', description: 'History' },
+    {
+      modifiers: [modifier],
+      keyCode: ';',
+      description: 'Close',
+      onClick: () => postToIde('closeChat', undefined),
+    },
+    {
+      modifiers: [modifier, 'Shift'],
+      keyCode: 'L',
+      description: 'Add Selected',
+    },
+  ];
 
   return (
-    <div
-      ref={shortcutContainerRef}
-      className='flex overflow-x-auto whitespace-nowrap no-scrollbar h-[1.55rem]'
-    >
-      {shortcuts.map((shortcut, index) => (
+    <div className='w-full relative'>
+      {showLeftArrow && (
+        <button
+          className='border-none absolute inset-y-0 flex items-center h-[1.55rem] bg-[#1f2428] cursor-pointer text-[#fff]'
+          onClick={() => {
+            scrollShortcut('left');
+          }}
+        >
+          <ChevronLeftIcon className='h-4 w-4' />
+        </button>
+      )}
+      <div
+        ref={shortcutContainerRef}
+        className='flex overflow-x-auto whitespace-nowrap no-scrollbar h-[1.55rem] ml-2'
+      >
+        {shortcuts.map((shortcut, index) => (
           <Shortcut
             modifiers={shortcut.modifiers}
             keyCode={shortcut.keyCode}
             description={shortcut.description}
           />
-      ))}
+        ))}
+      </div>
+      {showRightArrow && (
+        <button
+          className='border-none absolute -right-1 inset-y-0 flex items-center h-[1.55rem] bg-[#1f2428] text-[#fff] cursor-pointer'
+          onClick={() => {
+            scrollShortcut('right');
+          }}
+        >
+          <ChevronRightIcon className='h-4 w-4' />
+        </button>
+      )}
     </div>
   );
 };
-
 
 const Layout = () => {
   const navigate = useNavigate();
@@ -230,7 +296,7 @@ const Layout = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: any) => {
-      if (isMetaEquivalentKeyPressed(event) && event.code === "KeyC") {
+      if (isMetaEquivalentKeyPressed(event) && event.code === 'KeyC') {
         const selection = window.getSelection()?.toString();
         if (selection) {
           // Copy to clipboard
@@ -241,57 +307,57 @@ const Layout = () => {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [timeline]);
 
   useWebviewListener(
-    "addModel",
+    'addModel',
     async () => {
-      navigate("/models");
+      navigate('/models');
     },
     [navigate],
   );
 
-  useWebviewListener("openSettings", async () => {
-    postToIde("openConfigJson", undefined);
+  useWebviewListener('openSettings', async () => {
+    postToIde('openConfigJson', undefined);
   });
 
   useWebviewListener(
-    "viewHistory",
+    'viewHistory',
     async () => {
       // Toggle the history page / main page
-      if (location.pathname === "/history") {
-        navigate("/");
+      if (location.pathname === '/history') {
+        navigate('/');
       } else {
-        navigate("/history");
+        navigate('/history');
       }
     },
     [location, navigate],
   );
 
-  useWebviewListener("indexProgress", async (data) => {
+  useWebviewListener('indexProgress', async (data) => {
     setIndexingState(data);
   });
 
   useWebviewListener(
-    "addApiKey",
+    'addApiKey',
     async () => {
-      navigate("/modelconfig/openai");
+      navigate('/modelconfig/openai');
     },
     [navigate],
   );
 
   useWebviewListener(
-    "setupLocalModel",
+    'setupLocalModel',
     async () => {
-      postToIde("completeOnboarding", {
-        mode: "localAfterFreeTrial",
+      postToIde('completeOnboarding', {
+        mode: 'localAfterFreeTrial',
       });
-      navigate("/localOnboarding");
+      navigate('/localOnboarding');
     },
     [navigate],
   );
@@ -300,24 +366,24 @@ const Layout = () => {
     if (isJetBrains()) {
       return;
     }
-    const onboardingComplete = getLocalStorage("onboardingComplete");
+    const onboardingComplete = getLocalStorage('onboardingComplete');
     if (
       !onboardingComplete &&
-      !location.pathname.startsWith("/onboarding") &&
-      !location.pathname.startsWith("/existingUserOnboarding")
+      !location.pathname.startsWith('/onboarding') &&
+      !location.pathname.startsWith('/existingUserOnboarding')
     ) {
-      if (getLocalStorage("mainTextEntryCounter")) {
-        navigate("/existingUserOnboarding");
+      if (getLocalStorage('mainTextEntryCounter')) {
+        navigate('/existingUserOnboarding');
       } else {
-        navigate("/onboarding");
+        navigate('/onboarding');
       }
     }
   }, [location]);
 
   const [indexingState, setIndexingState] = useState<IndexingProgressUpdate>({
-    desc: "Indexing disabled",
+    desc: 'Indexing disabled',
     progress: 0.0,
-    status: "disabled",
+    status: 'disabled',
   });
 
   return (
@@ -444,4 +510,3 @@ const Layout = () => {
 };
 
 export default Layout;
-
