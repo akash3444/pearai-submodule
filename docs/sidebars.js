@@ -19,6 +19,8 @@ const sidebars = {
     "core-features",
     "codebase-context",
     "common-use-cases",
+    "changelog",
+    "contributors",
   ],
 };
 

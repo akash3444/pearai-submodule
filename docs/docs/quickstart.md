@@ -6,28 +6,14 @@ keywords: [quickstart, start, install, vscode, jetbrains]
 
 # ⚡️ Quickstart
 
-## VS Code
+1. Open the app and the chat window should appear on the right side (might load for a brief period on the first time).
 
-1. Click `Install` on the **[PearAI extension in the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Pearai.pearai)**
+2. Select PearAI server and log in. (Tip: If login issues arise, use `CMD+SHIFT+P` and select "Login to PearAI" to authenticate again)
 
-2. This will open the PearAI extension page in VS Code, where you will need to click `Install` again
+   1. [pearai-onboard.webm]
 
-3. Once you do this, you will see the PearAI logo show up on the left side bar. If you click it, the PearAI extension will open up:
+3. You're now ready to start prompting!
 
-> We strongly recommend moving PearAI to VS Code's right sidebar. This helps keep the file explorer open while using PearAI, and the sidebar can be toggled with a simple keyboard shortcut. ![move-to-right-sidebar](/img/move-to-right-sidebar.png)
+4. Try out the 2 core features below, `CMD+I` and `CMD+L`!
 
-4. If you have any problems, see the [troubleshooting guide](./troubleshooting.md) or ask for help in [our Discord](https://discord.gg/7QMraJUsQt).
-
-## JetBrains
-
-1. Open your JetBrains IDE and open settings using `cmd/ctrl + shift + ,`.
-
-2. Select **Plugins** on the sidebar.
-
-3. Search for "PearAI" in the marketplace and click `Install`. Once installed you'll see PearAI show up on the right toolbar:
-
-![jetbrains-quickstart](/img/jetbrains-quickstart.png)
-
-4. If you have any problems, see the [troubleshooting guide](./troubleshooting.md) or ask for help in [our Discord](https://discord.gg/7QMraJUsQt).
-
-> Alternatively, you can install from disk after downloading from the [JetBrains Extension Marketplace](https://plugins.jetbrains.com/plugin/22707-continue-extension).
+   1. [pearai-onboard2.webm]
