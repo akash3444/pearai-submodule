@@ -14,9 +14,10 @@
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
   docsSidebar: [
+    "core-features",
     "quickstart",
     "demos",
-    "core-features",
+    "important-shortcuts",
     "codebase-context",
     "common-use-cases",
     "changelog",

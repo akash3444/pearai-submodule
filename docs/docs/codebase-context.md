@@ -33,37 +33,6 @@ Here are use cases where it is not useful:
 - Refactoring
   - "Add a new parameter to the `bar` function and update usages"
 
-## Configuration
-
-There are a few options that let you configure the behavior of the codebase context provider. These can be set in `config.json`, and are the same for the codebase and folder context providers:
-
-```json title="~/.continue/config.json"
-{
-  "contextProviders": [
-    {
-      "name": "codebase",
-      "params": {
-        "nRetrieve": 25,
-        "nFinal": 5,
-        "useReranking": true
-      }
-    }
-  ]
-}
-```
-
-### `nRetrieve`
-
-Number of results to initially retrieve from vector database (default: 25)
-
-### `nFinal`
-
-Final number of results to use after re-ranking (default: 5)
-
-### `useReranking`
-
-Whether to use re-ranking, which will allow initial selection of `nRetrieve` results, then will use an LLM to select the top `nFinal` results (default: true)
-
 ## Ignore files during indexing
 
 PearAI respects `.gitignore` files in order to determine which files should not be indexed. If you'd like to exclude additional files, you can add them to a `.continueignore` file, which follows the exact same rules as `.gitignore`.
